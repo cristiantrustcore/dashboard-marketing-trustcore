@@ -1143,4 +1143,206 @@ function renderMain(unit) {
   const done   = allT.filter(isDone).length;
   const inProg = allT.filter(isInProgress).length;
   const todo   = allT.filter(t => !isDone(t) && !isInProgress(t)).length;
-  const pct    = allT.length ? Math.round((done / allT.length)<!-- deploy Mon May 25 19:51:02 UTC 2026 -->
+  const pct    = allT.length ? Math.round((done / allT.length) * 100) : 0;
+
+  const filtered = tasks.filter(t => {
+    const matchS =
+      filterStatus === 'all' ||
+      (filterStatus === 'done'       && isDone(t)) ||
+      (filterStatus === 'inprogress' && isInProgress(t)) ||
+      (filterStatus === 'todo'       && !isDone(t) && !isInProgress(t));
+    const matchQ = !filterSearch || t.name.toLowerCase().includes(filterSearch.toLowerCase());
+    return matchS && matchQ;
+  });
+
+  const byList = {};
+  filtered.forEach(t => {
+    const k = t._listName || 'Sin lista';
+    if (!byList[k]) byList[k] = [];
+    byList[k].push(t);
+  });
+
+  const listOrder = isMulti
+    ? (unit.subUnits.find(s => s.name === activeSub)?.lists.map(l => l.name) || [])
+    : unit.lists.map(l => l.name);
+
+  const c = unit.color;
+
+  let html = `
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-accent" style="background:${c}"></div>
+        <div class="stat-label">Total</div>
+        <div class="stat-value">${allT.length}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-accent" style="background:#2563eb"></div>
+        <div class="stat-label">En Progreso</div>
+        <div class="stat-value" style="color:#2563eb">${inProg}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-accent" style="background:#d97706"></div>
+        <div class="stat-label">Por Hacer</div>
+        <div class="stat-value" style="color:#d97706">${todo}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-accent" style="background:#059669"></div>
+        <div class="stat-label">Completadas</div>
+        <div class="stat-value" style="color:#059669">${done}</div>
+      </div>
+    </div>
+
+    <div class="unit-header">
+      <div class="unit-title">${unit.name}</div>
+      <div class="progress-group">
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${pct}%;background:${c}"></div>
+        </div>
+        <span class="progress-pct">${pct}%</span>
+      </div>
+    </div>`;
+
+  if (isMulti) {
+    html += `<div class="sub-tabs-wrap">
+      ${unit.subUnits.map(sub => `
+        <button class="sub-tab ${activeSub === sub.name ? 'active' : ''}"
+          onclick="switchSub('${sub.name}')">
+          ${sub.name}
+          <span style="font-size:10px;font-weight:500;opacity:0.6;margin-left:2px">(${(unitTasks[sub.name]||[]).length})</span>
+        </button>`).join('')}
+    </div>`;
+  }
+
+  html += `
+    <div class="filters">
+      <input class="search-input" type="text" placeholder="🔍 Buscar tarea…"
+        value="${esc(filterSearch)}"
+        oninput="filterSearch=this.value;renderMain(currentUnit)" />
+      <select class="filter-select" onchange="filterStatus=this.value;renderMain(currentUnit)">
+        <option value="all"        ${filterStatus==='all'?'selected':''}>Todos los estados</option>
+        <option value="todo"       ${filterStatus==='todo'?'selected':''}>Por hacer</option>
+        <option value="inprogress" ${filterStatus==='inprogress'?'selected':''}>En progreso</option>
+        <option value="done"       ${filterStatus==='done'?'selected':''}>Completadas</option>
+      </select>
+      <span class="filter-count">${filtered.length} / ${tasks.length}</span>
+    </div>`;
+
+  if (filtered.length === 0) {
+    html += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Sin tareas que coincidan.</div></div>`;
+  } else {
+    const ordered = listOrder.filter(l => byList[l]);
+    const others  = Object.keys(byList).filter(l => !listOrder.includes(l));
+    let delay = 0;
+    [...ordered, ...others].forEach(ln => {
+      const lt = byList[ln]; if (!lt?.length) return;
+      html += `<div class="list-section">
+        <div class="list-section-title">${esc(ln)} <span style="color:#ddd;font-weight:500">(${lt.length})</span></div>
+        <div class="tasks-grid">
+          ${lt.map((t, i) => renderCard(t, c, delay + i * 35)).join('')}
+        </div>
+      </div>`;
+      delay += lt.length * 35;
+    });
+  }
+
+  document.getElementById('dashMain').innerHTML = html;
+}
+
+function switchSub(name) {
+  activeSub = name; filterStatus = 'all'; filterSearch = '';
+  renderMain(currentUnit);
+}
+
+function renderCard(task, accent, delay = 0) {
+  const st  = statusStyle(task.status?.status);
+  const pri = priStyle(task.priority);
+  const desc = (task.description || '').trim();
+  const tip  = desc ? (desc.length > 280 ? desc.slice(0,280)+'…' : desc) : 'Sin descripción.';
+  const priHtml  = pri ? `<span class="pri-tag" style="background:${pri.bg};color:${pri.color}">${pri.label}</span>` : '';
+  const hintHtml = desc ? `<div class="tooltip-hint">💬 Pasa el cursor para más contexto</div>` : '';
+
+  return `
+  <div class="task-wrap">
+    <div class="task-tooltip">${esc(tip)}</div>
+    <div class="task-card" style="animation-delay:${delay}ms">
+      <div class="task-accent" style="background:${st.color}"></div>
+      <div class="task-body">
+        <div class="task-top">
+          <div class="task-name">${esc(task.name)}</div>
+          <span class="status-pill" style="background:${st.bg};color:${st.color}">
+            <span class="status-dot" style="background:${st.color}"></span>${st.label}
+          </span>
+        </div>
+        <div class="task-meta">${priHtml}</div>
+        ${hintHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── Holding total ────────────────────────────────────────── */
+async function loadHoldingTotal() {
+  const el = document.getElementById('holdingContent');
+  try {
+    const ids = [
+      ...UNITS.flatMap(u => u.subUnits
+        ? u.subUnits.flatMap(s => s.lists.map(l => l.id))
+        : u.lists.map(l => l.id)),
+      ...EXTRA_LISTS,
+    ];
+    const results = await Promise.allSettled(ids.map(id => fetchTasks(id)));
+    let total = 0, done = 0, inProg = 0;
+    results.forEach(r => {
+      if (r.status !== 'fulfilled') return;
+      total  += r.value.length;
+      done   += r.value.filter(isDone).length;
+      inProg += r.value.filter(isInProgress).length;
+    });
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    el.innerHTML = `
+      <div class="total-number">${total}</div>
+      <div class="total-label">tareas activas en el holding</div>
+      <div class="total-sub">Marketing gestiona este trabajo en paralelo para todas las unidades.</div>
+      <div class="stat-divider"></div>
+      <div class="holding-row"><span>En progreso</span><span class="holding-val" style="color:#2563eb">${inProg}</span></div>
+      <div class="holding-row"><span>Completadas</span><span class="holding-val" style="color:#059669">${done}</span></div>
+      <div class="holding-row"><span>Avance global</span><span class="holding-val">${pct}%</span></div>`;
+  } catch(e) {
+    el.innerHTML = `<span style="color:#e53e3e;font-size:12px;">Error al obtener total</span>`;
+  }
+}
+
+/* ── Helpers ──────────────────────────────────────────────── */
+function isDone(t)       { return !!(t.status?.status||'').toLowerCase().match(/done|complet|closed|cerrada/); }
+function isInProgress(t) { return !!(t.status?.status||'').toLowerCase().match(/progress|progreso|doing|en curso/); }
+
+function statusStyle(s) {
+  s = (s||'').toLowerCase();
+  if (s.match(/progress|progreso|doing|en curso/)) return { bg:'#eff6ff', color:'#2563eb', label:'En Progreso' };
+  if (s.match(/done|complet|closed|cerrada/))      return { bg:'#f0fdf4', color:'#059669', label:'Completada'  };
+  if (s.match(/review|revisión|testing|qa/))        return { bg:'#faf5ff', color:'#7c3aed', label:'En Revisión' };
+  if (s.match(/block|bloqueada/))                   return { bg:'#fff5f5', color:'#dc2626', label:'Bloqueada'   };
+  return { bg:'#f5f5f7', color:'#888', label: s || 'Por Hacer' };
+}
+
+function priStyle(p) {
+  if (!p) return null;
+  const v = (p.priority||'').toLowerCase();
+  if (v==='urgent') return { bg:'#fff5f5', color:'#dc2626', label:'🔴 Urgente' };
+  if (v==='high')   return { bg:'#fffbeb', color:'#d97706', label:'🟠 Alta'    };
+  if (v==='normal') return { bg:'#eff6ff', color:'#2563eb', label:'🔵 Normal'  };
+  if (v==='low')    return { bg:'#f5f5f7', color:'#aaa',    label:'⚪ Baja'    };
+  return null;
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Init ─────────────────────────────────────────────────── */
+buildLanding();
+</script>
+</body>
+</html>
