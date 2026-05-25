@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Gerentes — TrustCore Marketing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-inout:  cubic-bezier(0.77, 0, 0.175, 1);
+      --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f7;
+      color: #111;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hidden { display: none !important; }
+
+    /* ══════════════════════════════════════════════════════
+       LANDING
+    ══════════════════════════════════════════════════════ */
+    #screenLanding {
+      min-height: 100vh;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px 80px;
+    }
+
+    /* Top brand bar */
+    .landing-nav {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 72px;
+    }
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: #111;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; color: #fff;
+      letter-spacing: -1px;
+    }
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.3px;
+    }
+    .brand-dept {
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+    .nav-badge {
+      background: #f0f0f0;
+      color: #666;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Hero headline */
+    .landing-hero {
+      text-align: center;
+      margin-bottom: 64px;
+      max-width: 600px;
+    }
+    .landing-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    .landing-headline {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .landing-sub {
+      font-size: 16px;
+      color: #666;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* Company grid */
+    .company-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .company-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 20px;
+      padding: 32px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition:
+        border-color 200ms var(--ease-out),
+        box-shadow   200ms var(--ease-out),
+        transform    200ms var(--ease-out);
+      animation: cardIn 500ms var(--ease-out) both;
+    }
+    .company-card:nth-child(1) { animation-delay:  30ms; }
+    .company-card:nth-child(2) { animation-delay:  80ms; }
+    .company-card:nth-child(3) { animation-delay: 130ms; }
+    .company-card:nth-child(4) { animation-delay: 180ms; }
+    .company-card:nth-child(5) { animation-delay: 230ms; }
+    .company-card:nth-child(6) { animation-delay: 280ms; }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .company-card:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+      transform: translateY(-4px);
+    }
+    .company-card:active { transform: scale(0.97) translateY(0); }
+
+    /* Logo container — robusto */
+    .logo-container {
+      width: 96px; height: 96px;
+      border-radius: 18px;
+      background: #f7f7f7;
+      border: 1px solid #ebebeb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .logo-container img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      position: absolute;
+      opacity: 0;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .logo-container img.img-loaded { opacity: 1; }
+    .logo-fallback {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .logo-container.has-logo .logo-fallback { opacity: 0; }
+
+    .company-info { text-align: center; }
+    .company-name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .company-desc {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 500;
+    }
+
+    .btn-access {
+      width: 100%;
+      padding: 10px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      color: #fff;
+      transition:
+        opacity     150ms ease,
+        transform   150ms var(--ease-out),
+        box-shadow  150ms var(--ease-out);
+      letter-spacing: 0.2px;
+    }
+    .btn-access:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-access:active { transform: scale(0.97); opacity: 1; }
+
+    .landing-footer {
+      margin-top: 64px;
+      font-size: 12px;
+      color: #bbb;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       MODAL LOGIN
+    ══════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+      animation: fadeIn 180ms var(--ease-out);
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%; max-width: 400px;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.04);
+      animation: modalIn 260ms var(--ease-out);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-close {
+      position: absolute; top: 18px; right: 18px;
+      background: #f5f5f5; border: none;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer; color: #666;
+      transition: background 150ms ease, transform 150ms var(--ease-out);
+    }
+    .modal-close:hover { background: #ebebeb; }
+    .modal-close:active { transform: scale(0.93); }
+
+    .modal-logo-row {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .modal-logo-box {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: #f7f7f7;
+      border: 1px solid #ebebeb;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .modal-logo-box img {
+      width: 80%; height: 80%; object-fit: contain;
+      position: absolute; opacity: 0;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .modal-logo-box img.img-loaded { opacity: 1; }
+    .modal-logo-fallback {
+      font-size: 18px; font-weight: 900;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .modal-logo-box.has-logo .modal-logo-fallback { opacity: 0; }
+
+    .modal-title  { font-size: 22px; font-weight: 800; color: #111; letter-spacing: -0.5px; }
+    .modal-sub    { font-size: 13px; color: #888; margin-top: 3px; font-weight: 500; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: #888; margin-bottom: 7px;
+    }
+    .form-input {
+      width: 100%; padding: 12px 15px;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      font-size: 14px; font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      color: #111; outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+      background: #fafafa;
+    }
+    .form-input:focus {
+      border-color: #111;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+    }
+
+    .login-error {
+      background: #fff5f5; border: 1px solid #ffd5d5;
+      border-radius: 10px; padding: 11px 14px;
+      color: #e53e3e; font-size: 13px; font-weight: 500;
+      margin-bottom: 14px;
+      animation: shake 400ms var(--ease-out);
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      color: #fff; cursor: pointer;
+      margin-top: 4px;
+      transition:
+        opacity   150ms ease,
+        transform 160ms var(--ease-out),
+        box-shadow 150ms ease;
+    }
+    .btn-login:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-login:active { transform: scale(0.97); opacity: 1; }
+    .btn-login:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ══════════════════════════════════════════════════════
+       DASHBOARD
+    ══════════════════════════════════════════════════════ */
+    #screenDashboard { min-height: 100vh; background: #f5f5f7; }
+
+    /* Top color accent strip (company color) */
+    .dash-color-strip {
+      height: 4px;
+      width: 100%;
+      transition: background 400ms var(--ease-out);
+    }
+
+    .dash-header {
+      background: #fff;
+      border-bottom: 1px solid #ebebeb;
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 1px 0 #ebebeb;
+    }
+    .dash-header-left { display: flex; align-items: center; gap: 14px; }
+
+    /* Header logo */
+    .dash-logo-wrap {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: #f7f7f7;
+      border: 1px solid #ebebeb;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .dash-logo-wrap img {
+      width: 80%; height: 80%; object-fit: contain;
+      position: absolute; opacity: 0;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .dash-logo-wrap img.img-loaded { opacity: 1; }
+    .dash-logo-fallback {
+      font-size: 12px; font-weight: 900;
+      transition: opacity 300ms var(--ease-out);
+    }
+    .dash-logo-wrap.has-logo .dash-logo-fallback { opacity: 0; }
+
+    .dash-unit-name { font-size: 16px; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+    .dash-unit-sub  { font-size: 11px; color: #aaa; font-weight: 500; margin-top: 1px; }
+
+    .dash-header-right { display: flex; align-items: center; gap: 10px; }
+
+    .btn-sm {
+      padding: 7px 15px;
+      border-radius: 8px;
+      font-size: 12px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all 160ms var(--ease-out);
+      border: none;
+    }
+    .btn-sm:active { transform: scale(0.96); }
+    .btn-refresh {
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .btn-refresh:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-logout {
+      background: #f5f5f5;
+      border: 1.5px solid #e8e8e8;
+      color: #555;
+    }
+    .btn-logout:hover { background: #ebebeb; }
+
+    /* Body layout */
+    .dash-body {
+      padding: 28px 32px 80px;
+      display: grid;
+      grid-template-columns: 1fr 256px;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* ── Sidebar ── */
+    .dash-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+    .sidebar-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #ebebeb;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .sidebar-label {
+      font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: #bbb; margin-bottom: 18px;
+    }
+
+    .total-number {
+      font-size: 72px; font-weight: 900;
+      color: #111; line-height: 0.9;
+      letter-spacing: -4px;
+      margin-bottom: 12px;
+    }
+    .total-label {
+      font-size: 14px; font-weight: 700;
+      color: #111; line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .total-sub {
+      font-size: 12px; color: #aaa;
+      line-height: 1.6; font-weight: 400;
+    }
+
+    .stat-divider { height: 1px; background: #f0f0f0; margin: 16px 0; }
+
+    .holding-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: #888; padding: 4px 0; font-weight: 500;
+    }
+    .holding-val { font-weight: 800; color: #111; }
+
+    .total-loading {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: #bbb; font-weight: 500;
+    }
+    .mini-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #e8e8e8; border-top-color: #111;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite; flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Main panel ── */
+    .dash-main { min-width: 0; }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 18px 14px;
+      border: 1px solid #ebebeb;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 400ms var(--ease-out) both;
+    }
+    .stat-card:nth-child(1) { animation-delay: 60ms; }
+    .stat-card:nth-child(2) { animation-delay: 100ms; }
+    .stat-card:nth-child(3) { animation-delay: 140ms; }
+    .stat-card:nth-child(4) { animation-delay: 180ms; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card-accent {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; border-radius: 14px 14px 0 0;
+    }
+    .stat-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: #bbb; margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 32px; font-weight: 900;
+      letter-spacing: -1.5px; color: #111;
+      line-height: 1;
+    }
+
+    /* Unit header */
+    .unit-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+    }
+    .unit-title {
+      font-size: 24px; font-weight: 900;
+      letter-spacing: -1px; color: #111;
+    }
+    .progress-group { display: flex; align-items: center; gap: 10px; }
+    .progress-track {
+      width: 140px; height: 6px;
+      background: #ebebeb; border-radius: 3px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 600ms var(--ease-spring);
+    }
+    .progress-pct { font-size: 12px; font-weight: 700; color: #888; }
+
+    /* Sub-tabs (PTS) */
+    .sub-tabs-wrap {
+      display: flex; gap: 4px;
+      background: #f5f5f7; border-radius: 12px; padding: 4px;
+      width: fit-content; margin-bottom: 20px;
+    }
+    .sub-tab {
+      padding: 7px 18px; border-radius: 9px; border: none;
+      background: none; font-size: 13px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer; color: #888;
+      transition: all 160ms var(--ease-out);
+    }
+    .sub-tab:hover { color: #111; }
+    .sub-tab.active {
+      background: #fff; color: #111;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+    .sub-tab:active { transform: scale(0.96); }
+
+    /* Filters */
+    .filters {
+      display: flex; gap: 10px; margin-bottom: 22px;
+      flex-wrap: wrap; align-items: center;
+    }
+    .search-input {
+      padding: 9px 14px; border-radius: 10px;
+      border: 1.5px solid #e8e8e8;
+      font-size: 13px; font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      color: #111; background: #fff; width: 220px; outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .search-input:focus {
+      border-color: #111;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+    }
+    .filter-select {
+      padding: 9px 12px; border-radius: 10px;
+      border: 1.5px solid #e8e8e8;
+      font-size: 13px; font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      color: #111; background: #fff; cursor: pointer; outline: none;
+      transition: border-color 150ms ease;
+    }
+    .filter-select:focus { border-color: #111; }
+    .filter-count { font-size: 12px; color: #bbb; font-weight: 600; }
+
+    /* List sections */
+    .list-section { margin-bottom: 32px; }
+    .list-section-title {
+      font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: #bbb; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .list-section-title::after {
+      content: ''; flex: 1; height: 1px; background: #ebebeb;
+    }
+
+    /* Task grid */
+    .tasks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 10px;
+    }
+
+    /* Tooltip */
+    .task-wrap { position: relative; }
+    .task-wrap:hover .task-tooltip {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .task-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      width: 260px;
+      background: #111; color: #e8e8e8;
+      font-size: 12px; font-weight: 400; line-height: 1.6;
+      padding: 12px 14px; border-radius: 12px;
+      z-index: 999; opacity: 0; pointer-events: none;
+      transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .task-tooltip::after {
+      content: ''; position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: #111;
+    }
+
+    /* Task card */
+    .task-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid #ebebeb;
+      position: relative; overflow: hidden;
+      cursor: default;
+      transition:
+        box-shadow 200ms var(--ease-out),
+        border-color 200ms var(--ease-out),
+        transform   200ms var(--ease-out);
+      animation: taskIn 360ms var(--ease-out) both;
+    }
+    .task-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border-color: #d8d8d8;
+      transform: translateY(-2px);
+    }
+    .task-card:active { transform: scale(0.98); }
+
+    .task-accent {
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%;
+      border-radius: 14px 0 0 14px;
+    }
+    .task-body { padding-left: 10px; }
+    .task-top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .task-name {
+      font-size: 13px; font-weight: 600;
+      color: #111; line-height: 1.45; flex: 1;
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 20px;
+      font-size: 10px; font-weight: 700;
+      white-space: nowrap; flex-shrink: 0; letter-spacing: 0.2px;
+    }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .task-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .pri-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.2px;
+    }
+    .tooltip-hint {
+      font-size: 10px; color: #ccc;
+      margin-top: 8px; font-style: italic; font-weight: 400;
+    }
+
+    /* States */
+    .loading {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 20px; gap: 16px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 2.5px solid #e8e8e8; border-top-color: #111;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    .loading-text { font-size: 13px; color: #aaa; font-weight: 500; }
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: #bbb;
+    }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; }
+    .empty-text { font-size: 14px; font-weight: 500; }
+    .error-msg {
+      background: #fff5f5; border: 1px solid #ffd5d5;
+      border-radius: 12px; padding: 14px 18px;
+      color: #e53e3e; font-size: 13px; font-weight: 500;
+      margin: 16px 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 960px) {
+      .dash-body { grid-template-columns: 1fr; }
+      .dash-sidebar { order: -1; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 680px) {
+      #screenLanding { padding: 32px 16px 60px; }
+      .company-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .landing-headline { font-size: 32px; }
+      .landing-nav { margin-bottom: 40px; }
+      .dash-header { padding: 0 16px; }
+      .dash-body { padding: 16px 16px 60px; }
+      .tasks-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     LANDING
+═══════════════════════════════════════ -->
+<div id="screenLanding">
+  <nav class="landing-nav">
+    <div class="brand-mark">
+      <div class="brand-icon">TC</div>
+      <div>
+        <div class="brand-name">TrustCore Services</div>
+        <div class="brand-dept">Departamento de Marketing</div>
+      </div>
+    </div>
+    <span class="nav-badge">Acceso Restringido</span>
+  </nav>
+
+  <div class="landing-hero">
+    <p class="landing-eyebrow">Portal de Gerentes</p>
+    <h1 class="landing-headline">Tu unidad.<br>En tiempo real.</h1>
+    <p class="landing-sub">Selecciona tu empresa para ver el avance del equipo de marketing.</p>
+  </div>
+
+  <div class="company-grid" id="companyGrid"></div>
+
+  <p class="landing-footer">© 2026 TrustCore Services · Confidencial</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL LOGIN
+═══════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="modalLogin">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo-row">
+      <div class="modal-logo-box" id="mLogoBox">
+        <img id="mLogoImg" src="" alt="" />
+        <span class="modal-logo-fallback" id="mLogoFallback"></span>
+      </div>
+      <div>
+        <div class="modal-title" id="mTitle">Acceso</div>
+        <div class="modal-sub">Ingresa tus credenciales</div>
+      </div>
+    </div>
+
+    <div class="login-error hidden" id="loginError">⚠ Usuario o contraseña incorrectos.</div>
+
+    <div class="form-group">
+      <label class="form-label" for="inputUser">Usuario</label>
+      <input class="form-input" type="text" id="inputUser" placeholder="tu usuario"
+        onkeydown="if(event.key==='Enter')doLogin()" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inputPass">Contraseña</label>
+      <input class="form-input" type="password" id="inputPass" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password" />
+    </div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════ -->
+<div id="screenDashboard" class="hidden">
+  <div class="dash-color-strip" id="dashStrip"></div>
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <div class="dash-logo-wrap" id="dashLogoWrap">
+        <img id="dashLogoImg" src="" alt="" />
+        <span class="dash-logo-fallback" id="dashLogoFallback"></span>
+      </div>
+      <div>
+        <div class="dash-unit-name" id="dashUnitName"></div>
+        <div class="dash-unit-sub">Dashboard de Marketing</div>
+      </div>
+    </div>
+    <div class="dash-header-right">
+      <button class="btn-sm btn-refresh" id="btnRefresh" onclick="refreshUnit()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M1 4v6h6M23 20v-6h-6"/>
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </svg>
+        Actualizar
+      </button>
+      <button class="btn-sm btn-logout" onclick="logout()">← Salir</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+    <div class="dash-main" id="dashMain"></div>
+    <div class="dash-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-label">Holding de Marketing</div>
+        <div id="holdingContent">
+          <div class="total-loading">
+            <div class="mini-spinner"></div>
+            <span>Calculando…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const API_KEY = 'pk_100230911_F874Z9YG10MFJWFN9V9G8AIVMZISWQ1V';
+
+/* ── Unidades ─────────────────────────────────────────────── */
+const UNITS = [
+  {
+    id: 'preventty', name: 'PREVENTTY', initial: 'P',
+    color: '#7B68EE', desc: 'Unidad de Negocio',
+    logo: 'logos/preventty.png',
+    lists: [
+      { id: '901416220155', name: '01 · Strategy & Insights' },
+      { id: '901416220159', name: '02 · Brand & Creative' },
+      { id: '901416220167', name: '03 · Media & Performance' },
+      { id: '901416220169', name: '04 · Social' },
+      { id: '901416220172', name: '05 · CRM & Growth' },
+      { id: '901416220176', name: '06 · Customer Experience' },
+      { id: '901416220181', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    id: 'utb', name: 'UTB', initial: 'U',
+    color: '#2563eb', desc: 'Unidad de Negocio',
+    logo: 'logos/utb.png',
+    lists: [
+      { id: '901416220191', name: '01 · Strategy & Insights' },
+      { id: '901416220194', name: '02 · Brand & Creative' },
+      { id: '901416220200', name: '03 · Media & Performance' },
+      { id: '901416220204', name: '04 · Social' },
+      { id: '901416220207', name: '05 · CRM & Growth' },
+      { id: '901416220209', name: '06 · Customer Experience' },
+      { id: '901416220215', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    id: 'pts', name: 'PTS', initial: 'PT',
+    color: '#059669', desc: 'Unidad de Negocio',
+    logo: 'logos/pts.png',
+    subUnits: [
+      {
+        name: 'PTS 1',
+        lists: [
+          { id: '901416220217', name: '01 · Strategy & Insights' },
+          { id: '901416220220', name: '02 · Brand & Creative' },
+          { id: '901416220222', name: '03 · Media & Performance' },
+          { id: '901416220226', name: '04 · Social' },
+          { id: '901416220228', name: '05 · CRM & Growth' },
+          { id: '901416220231', name: '06 · Customer Experience' },
+          { id: '901416220233', name: '07 · Digital & Tech' },
+        ]
+      },
+      {
+        name: 'PTS 2',
+        lists: [
+          { id: '901416220234', name: '01 · Strategy & Insights' },
+          { id: '901416220239', name: '02 · Brand & Creative' },
+          { id: '901416220241', name: '03 · Media & Performance' },
+          { id: '901416220248', name: '04 · Social' },
+          { id: '901416220255', name: '05 · CRM & Growth' },
+          { id: '901416220259', name: '06 · Customer Experience' },
+          { id: '901416220263', name: '07 · Digital & Tech' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'evolum', name: 'EVOLUM', initial: 'E',
+    color: '#d97706', desc: 'Unidad de Negocio',
+    logo: 'logos/evolum.jpg',
+    lists: [
+      { id: '901416220271', name: '01 · Strategy & Insights' },
+      { id: '901416220277', name: '02 · Brand & Creative' },
+      { id: '901416220291', name: '03 · Media & Performance' },
+      { id: '901416220299', name: '04 · Social' },
+      { id: '901416220302', name: '05 · CRM & Growth' },
+      { id: '901416220308', name: '06 · Customer Experience' },
+      { id: '901416220312', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    id: 'aaf', name: 'AAF', initial: 'A',
+    color: '#dc2626', desc: 'Unidad de Negocio',
+    logo: 'logos/aaf.jpg',
+    lists: [
+      { id: '901416220320', name: '01 · Strategy & Insights' },
+      { id: '901416220324', name: '02 · Brand & Creative' },
+      { id: '901416220331', name: '03 · Media & Performance' },
+      { id: '901416220336', name: '04 · Social' },
+      { id: '901416220338', name: '05 · CRM & Growth' },
+      { id: '901416238253', name: '06 · Customer Experience' },
+      { id: '901416238256', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    id: 'xelera', name: 'XELERA', initial: 'X',
+    color: '#7c3aed', desc: 'Unidad de Negocio',
+    logo: 'logos/xelera.png',
+    lists: [
+      { id: '901416238260', name: '01 · Strategy & Insights' },
+      { id: '901416238263', name: '02 · Brand & Creative' },
+      { id: '901416238264', name: '03 · Media & Performance' },
+      { id: '901416238269', name: '04 · Social' },
+      { id: '901416238271', name: '05 · CRM & Growth' },
+      { id: '901416238272', name: '06 · Customer Experience' },
+      { id: '901416238273', name: '07 · Digital & Tech' },
+    ]
+  },
+];
+
+const EXTRA_LISTS = [
+  '901416238276','901416238282','901416238285','901416238286','901416238288','901416238289','901416238290',
+  '901416219173','901416445630','901416446158','901416446385','901416446747','901416447152','901416447810','901416448092',
+];
+
+/* ── Estado ───────────────────────────────────────────────── */
+let currentUnit  = null;
+let unitTasks    = {};
+let activeSub    = null;
+let filterStatus = 'all';
+let filterSearch = '';
+
+/* ── Helpers de logo ──────────────────────────────────────── */
+function loadLogo(imgEl, fallbackEl, wrapEl, src, color) {
+  fallbackEl.style.color = color;
+  imgEl.src = src;
+  imgEl.onload = () => {
+    imgEl.classList.add('img-loaded');
+    wrapEl.classList.add('has-logo');
+  };
+  imgEl.onerror = () => {
+    imgEl.style.display = 'none';
+  };
+}
+
+/* ── Landing ──────────────────────────────────────────────── */
+function buildLanding() {
+  const grid = document.getElementById('companyGrid');
+  grid.innerHTML = UNITS.map(u => `
+    <div class="company-card" onclick="showLogin('${u.id}')">
+      <div class="logo-container" id="lc-${u.id}">
+        <img id="limg-${u.id}" src="" alt="${u.name}" />
+        <span class="logo-fallback" id="lfb-${u.id}">${u.initial}</span>
+      </div>
+      <div class="company-info">
+        <div class="company-name">${u.name}</div>
+        <div class="company-desc">${u.desc}</div>
+      </div>
+      <button class="btn-access" style="background:${u.color};box-shadow:0 4px 14px ${u.color}44">
+        Acceder →
+      </button>
+    </div>
+  `).join('');
+
+  // Cargar logos después del render
+  UNITS.forEach(u => {
+    const img = document.getElementById(`limg-${u.id}`);
+    const fb  = document.getElementById(`lfb-${u.id}`);
+    const wrap= document.getElementById(`lc-${u.id}`);
+    if (img && fb && wrap) loadLogo(img, fb, wrap, u.logo, u.color);
+  });
+}
+
+/* ── Login ────────────────────────────────────────────────── */
+function showLogin(unitId) {
+  currentUnit = UNITS.find(u => u.id === unitId);
+  if (!currentUnit) return;
+
+  document.getElementById('mTitle').textContent = currentUnit.name;
+  document.getElementById('mLogoFallback').textContent = currentUnit.initial;
+  document.getElementById('btnLogin').style.background = currentUnit.color;
+  document.getElementById('btnLogin').style.boxShadow = `0 4px 14px ${currentUnit.color}44`;
+
+  const img  = document.getElementById('mLogoImg');
+  const fb   = document.getElementById('mLogoFallback');
+  const wrap = document.getElementById('mLogoBox');
+  img.classList.remove('img-loaded');
+  wrap.classList.remove('has-logo');
+  loadLogo(img, fb, wrap, currentUnit.logo, currentUnit.color);
+
+  document.getElementById('inputUser').value = '';
+  document.getElementById('inputPass').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+  document.getElementById('modalLogin').classList.remove('hidden');
+  setTimeout(() => document.getElementById('inputUser').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modalLogin').classList.add('hidden');
+}
+
+function doLogin() {
+  const user = document.getElementById('inputUser').value.trim().toLowerCase();
+  const pass = document.getElementById('inputPass').value.trim().toLowerCase();
+  const err  = document.getElementById('loginError');
+
+  if (!currentUnit || user !== currentUnit.id || pass !== currentUnit.id) {
+    err.classList.remove('hidden');
+    // re-trigger shake animation
+    err.style.animation = 'none';
+    err.offsetHeight;
+    err.style.animation = '';
+    document.getElementById('inputPass').value = '';
+    document.getElementById('inputPass').focus();
+    return;
+  }
+
+  document.getElementById('modalLogin').classList.add('hidden');
+  enterDashboard(currentUnit);
+}
+
+/* ── Dashboard ────────────────────────────────────────────── */
+function enterDashboard(unit) {
+  // Color strip
+  document.getElementById('dashStrip').style.background = unit.color;
+
+  // Header
+  document.getElementById('dashUnitName').textContent = unit.name;
+  document.getElementById('dashLogoFallback').textContent = unit.initial;
+
+  const img  = document.getElementById('dashLogoImg');
+  const fb   = document.getElementById('dashLogoFallback');
+  const wrap = document.getElementById('dashLogoWrap');
+  img.classList.remove('img-loaded');
+  wrap.classList.remove('has-logo');
+  loadLogo(img, fb, wrap, unit.logo, unit.color);
+
+  // Refresh button color
+  document.getElementById('btnRefresh').style.background = unit.color;
+  document.getElementById('btnRefresh').style.boxShadow = `0 2px 8px ${unit.color}44`;
+
+  document.getElementById('screenLanding').classList.add('hidden');
+  document.getElementById('screenDashboard').classList.remove('hidden');
+
+  filterStatus = 'all'; filterSearch = '';
+  unitTasks = {};
+  activeSub = unit.subUnits ? unit.subUnits[0].name : null;
+
+  loadUnitTasks(unit);
+  loadHoldingTotal();
+}
+
+function logout() {
+  document.getElementById('screenDashboard').classList.add('hidden');
+  document.getElementById('screenLanding').classList.remove('hidden');
+  currentUnit = null; unitTasks = {}; activeSub = null;
+  document.getElementById('holdingContent').innerHTML =
+    `<div class="total-loading"><div class="mini-spinner"></div><span>Calculando…</span></div>`;
+}
+
+function refreshUnit() {
+  if (!currentUnit) return;
+  const btn = document.getElementById('btnRefresh');
+  btn.disabled = true; btn.textContent = 'Cargando…';
+  unitTasks = {};
+  loadUnitTasks(currentUnit).then(() => {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Actualizar`;
+  });
+}
+
+/* ── API ──────────────────────────────────────────────────── */
+async function fetchTasks(listId) {
+  const r = await fetch(
+    `https://api.clickup.com/api/v2/list/${listId}/task?archived=false&include_closed=true&subtasks=true`,
+    { headers: { Authorization: API_KEY } }
+  );
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return (await r.json()).tasks || [];
+}
+
+async function loadUnitTasks(unit) {
+  const container = document.getElementById('dashMain');
+  container.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando tareas de ${unit.name}…</div></div>`;
+  try {
+    if (unit.subUnits) {
+      await Promise.all(unit.subUnits.map(async sub => {
+        const all = [];
+        for (const l of sub.lists) {
+          const t = await fetchTasks(l.id);
+          t.forEach(x => { x._listName = l.name; });
+          all.push(...t);
+        }
+        unitTasks[sub.name] = all;
+      }));
+    } else {
+      const all = [];
+      for (const l of unit.lists) {
+        const t = await fetchTasks(l.id);
+        t.forEach(x => { x._listName = l.name; });
+        all.push(...t);
+      }
+      unitTasks['default'] = all;
+    }
+    renderMain(unit);
+  } catch(e) {
+    container.innerHTML = `<div class="error-msg">⚠️ Error: ${e.message}</div>`;
+  }
+}
+
+/* ── Render ───────────────────────────────────────────────── */
+function renderMain(unit) {
+  const isMulti = !!unit.subUnits;
+  const tasks   = isMulti ? (unitTasks[activeSub] || []) : (unitTasks['default'] || []);
+  const allT    = isMulti ? Object.values(unitTasks).flat() : tasks;
+
+  const done   = allT.filter(isDone).length;
+  const inProg = allT.filter(isInProgress).length;
+  const todo   = allT.filter(t => !isDone(t) && !isInProgress(t)).length;
+  const pct    = allT.length ? Math.round((done / allT.length)

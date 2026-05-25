@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Marketing — TrustCore Services</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, #7B68EE, #5a4fcf);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: white; font-weight: 800;
+    }
+    .header-title { font-size: 17px; font-weight: 700; color: #1a1a2e; }
+    .header-sub { font-size: 12px; color: #6b7280; margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .btn-refresh {
+      background: #7B68EE; color: white; border: none;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-refresh:hover { background: #6555e0; }
+    .btn-refresh:disabled { background: #c4b5fd; cursor: not-allowed; }
+    .last-updated { font-size: 12px; color: #9ca3af; }
+
+    /* ── STATS ── */
+    .stats-bar {
+      display: flex; gap: 16px; padding: 20px 32px 0;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: white; border-radius: 12px; padding: 16px 24px;
+      flex: 1; min-width: 150px;
+      border: 1px solid #e5e7eb;
+    }
+    .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .stat-value { font-size: 30px; font-weight: 800; margin-top: 4px; }
+    .stat-value.purple { color: #7B68EE; }
+    .stat-value.green  { color: #10b981; }
+    .stat-value.orange { color: #f59e0b; }
+    .stat-value.blue   { color: #3b82f6; }
+
+    /* ── TABS ── */
+    .tabs-container { padding: 20px 32px 0; overflow-x: auto; }
+    .tabs {
+      display: flex; gap: 4px;
+      background: white; border-radius: 12px; padding: 6px;
+      border: 1px solid #e5e7eb;
+      width: fit-content; min-width: 100%;
+    }
+    .tab {
+      padding: 8px 16px; border-radius: 8px; border: none; background: none;
+      font-size: 13px; font-weight: 600; cursor: pointer; color: #6b7280;
+      transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+    }
+    .tab:hover { background: #f3f4f6; color: #374151; }
+    .tab.active { background: #7B68EE; color: white; }
+    .tab .badge {
+      border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700;
+      background: rgba(255,255,255,0.25);
+    }
+    .tab:not(.active) .badge { background: #f3f4f6; color: #6b7280; }
+
+    /* ── MAIN ── */
+    .main { padding: 20px 32px 60px; }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+    }
+    .search-input {
+      padding: 8px 14px; border-radius: 8px; border: 1px solid #e5e7eb;
+      font-size: 13px; color: #374151; background: white; width: 260px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: #7B68EE; }
+    .filter-select {
+      padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e7eb;
+      font-size: 13px; color: #374151; background: white; cursor: pointer; outline: none;
+    }
+    .filter-count { font-size: 12px; color: #9ca3af; }
+
+    /* ── UNIT HEADER ── */
+    .unit-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
+    }
+    .unit-title { font-size: 22px; font-weight: 800; color: #1a1a2e; }
+    .progress-wrap { display: flex; align-items: center; gap: 10px; }
+    .progress-bar-outer { width: 180px; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+    .progress-bar-inner { height: 100%; background: #10b981; border-radius: 4px; transition: width 0.5s; }
+    .progress-label { font-size: 12px; color: #6b7280; font-weight: 600; }
+
+    /* ── LIST SECTION ── */
+    .list-section { margin-bottom: 28px; }
+    .list-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.7px; color: #9ca3af; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .list-section-title::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+    /* ── TASK CARDS ── */
+    .tasks-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px;
+    }
+
+    /* ── TOOLTIP WRAPPER ── */
+    .task-tooltip-wrap {
+      position: relative;
+    }
+    .task-tooltip-wrap:hover .task-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .task-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      width: 300px;
+      background: #1e293b;
+      color: #e2e8f0;
+      font-size: 12px;
+      line-height: 1.55;
+      padding: 12px 14px;
+      border-radius: 10px;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s, transform 0.18s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .task-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #1e293b;
+    }
+
+    .task-card {
+      background: white; border-radius: 12px; padding: 16px;
+      border: 1px solid #e5e7eb;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      position: relative; overflow: hidden;
+      cursor: default;
+    }
+    .task-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: #c7d2fe; }
+    .task-card-accent {
+      position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+      border-radius: 12px 0 0 12px;
+    }
+    .task-inner { padding-left: 10px; }
+    .task-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 10px; margin-bottom: 10px;
+    }
+    .task-name { font-size: 13.5px; font-weight: 600; color: #1a1a2e; line-height: 1.4; flex: 1; }
+    .task-desc-preview {
+      font-size: 11.5px; color: #6b7280; line-height: 1.45; margin-top: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .task-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #6b7280; }
+    .priority-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+    }
+    .tooltip-hint {
+      font-size: 10px; color: #d1d5db; margin-top: 8px; font-style: italic;
+    }
+
+    /* ── DUE COLORS ── */
+    .due-overdue { color: #ef4444; font-weight: 600; }
+    .due-soon    { color: #f59e0b; font-weight: 600; }
+    .due-ok      { color: #6b7280; }
+
+    /* ── STATES ── */
+    .loading {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 80px 20px; gap: 16px;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid #e5e7eb;
+      border-top-color: #7B68EE; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 14px; color: #6b7280; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
+    .empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .error-msg {
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
+      padding: 14px 18px; color: #ef4444; font-size: 13px; margin: 16px 0;
+    }
+
+    @media (max-width: 640px) {
+      .header { padding: 0 16px; }
+      .stats-bar, .tabs-container, .main { padding-left: 16px; padding-right: 16px; }
+      .tasks-grid { grid-template-columns: 1fr; }
+      .progress-bar-outer { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">TC</div>
+    <div>
+      <div class="header-title">Dashboard Marketing</div>
+      <div class="header-sub">TrustCore Services — Estado de Unidades de Negocio</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="last-updated" id="lastUpdated">—</span>
+    <button class="btn-refresh" id="btnRefresh" onclick="loadAll()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M1 4v6h6M23 20v-6h-6"/>
+        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+      </svg>
+      Actualizar
+    </button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-label">Total Tareas</div><div class="stat-value purple" id="statTotal">—</div></div>
+  <div class="stat-card"><div class="stat-label">En Progreso</div><div class="stat-value blue" id="statInProgress">—</div></div>
+  <div class="stat-card"><div class="stat-label">Por Hacer</div><div class="stat-value orange" id="statTodo">—</div></div>
+  <div class="stat-card"><div class="stat-label">Completadas</div><div class="stat-value green" id="statDone">—</div></div>
+</div>
+
+<div class="tabs-container">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<div class="main" id="mainContent">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Cargando datos desde ClickUp…</div>
+  </div>
+</div>
+
+<script>
+const API_KEY = 'pk_100230911_F874Z9YG10MFJWFN9V9G8AIVMZISWQ1V';
+
+// ── UNIT DEFINITIONS ─────────────────────────────────────────────
+const MARKETING_UNITS = [
+  {
+    name: 'PREVENTTY', emoji: '📦',
+    lists: [
+      { id: '901416220155', name: '01 · Strategy & Insights' },
+      { id: '901416220159', name: '02 · Brand & Creative' },
+      { id: '901416220167', name: '03 · Media & Performance' },
+      { id: '901416220169', name: '04 · Social' },
+      { id: '901416220172', name: '05 · CRM & Growth' },
+      { id: '901416220176', name: '06 · Customer Experience' },
+      { id: '901416220181', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'UTB', emoji: '📦',
+    lists: [
+      { id: '901416220191', name: '01 · Strategy & Insights' },
+      { id: '901416220194', name: '02 · Brand & Creative' },
+      { id: '901416220200', name: '03 · Media & Performance' },
+      { id: '901416220204', name: '04 · Social' },
+      { id: '901416220207', name: '05 · CRM & Growth' },
+      { id: '901416220209', name: '06 · Customer Experience' },
+      { id: '901416220215', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'PTS 1', emoji: '📦',
+    lists: [
+      { id: '901416220217', name: '01 · Strategy & Insights' },
+      { id: '901416220220', name: '02 · Brand & Creative' },
+      { id: '901416220222', name: '03 · Media & Performance' },
+      { id: '901416220226', name: '04 · Social' },
+      { id: '901416220228', name: '05 · CRM & Growth' },
+      { id: '901416220231', name: '06 · Customer Experience' },
+      { id: '901416220233', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'PTS 2', emoji: '📦',
+    lists: [
+      { id: '901416220234', name: '01 · Strategy & Insights' },
+      { id: '901416220239', name: '02 · Brand & Creative' },
+      { id: '901416220241', name: '03 · Media & Performance' },
+      { id: '901416220248', name: '04 · Social' },
+      { id: '901416220255', name: '05 · CRM & Growth' },
+      { id: '901416220259', name: '06 · Customer Experience' },
+      { id: '901416220263', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'EVOLUM', emoji: '📦',
+    lists: [
+      { id: '901416220271', name: '01 · Strategy & Insights' },
+      { id: '901416220277', name: '02 · Brand & Creative' },
+      { id: '901416220291', name: '03 · Media & Performance' },
+      { id: '901416220299', name: '04 · Social' },
+      { id: '901416220302', name: '05 · CRM & Growth' },
+      { id: '901416220308', name: '06 · Customer Experience' },
+      { id: '901416220312', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'AAF', emoji: '📦',
+    lists: [
+      { id: '901416220320', name: '01 · Strategy & Insights' },
+      { id: '901416220324', name: '02 · Brand & Creative' },
+      { id: '901416220331', name: '03 · Media & Performance' },
+      { id: '901416220336', name: '04 · Social' },
+      { id: '901416220338', name: '05 · CRM & Growth' },
+      { id: '901416238253', name: '06 · Customer Experience' },
+      { id: '901416238256', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'XELERA', emoji: '📦',
+    lists: [
+      { id: '901416238260', name: '01 · Strategy & Insights' },
+      { id: '901416238263', name: '02 · Brand & Creative' },
+      { id: '901416238264', name: '03 · Media & Performance' },
+      { id: '901416238269', name: '04 · Social' },
+      { id: '901416238271', name: '05 · CRM & Growth' },
+      { id: '901416238272', name: '06 · Customer Experience' },
+      { id: '901416238273', name: '07 · Digital & Tech' },
+    ]
+  },
+  {
+    name: 'TRUSTCORE', emoji: '🏢',
+    lists: [
+      { id: '901416238276', name: '01 · Strategy & Insights' },
+      { id: '901416238282', name: '02 · Brand & Creative' },
+      { id: '901416238285', name: '03 · Media & Performance' },
+      { id: '901416238286', name: '04 · Social' },
+      { id: '901416238288', name: '05 · CRM & Growth' },
+      { id: '901416238289', name: '06 · Customer Experience' },
+      { id: '901416238290', name: '07 · Digital & Tech' },
+    ]
+  },
+];
+
+// PROYECTOS HOLDING — listas directas (sin carpeta)
+const HOLDING_UNIT = {
+  name: 'HOLDING', emoji: '🏛️',
+  lists: [
+    { id: '901416219173', name: 'Endosos' },
+    { id: '901416445630', name: 'TRUSTCORE' },
+    { id: '901416446158', name: 'EVOLUM' },
+    { id: '901416446385', name: 'ALL AMERICA FINANCIAL' },
+    { id: '901416446747', name: 'PTS' },
+    { id: '901416447152', name: 'UTB' },
+    { id: '901416447810', name: 'XELERA' },
+    { id: '901416448092', name: 'PREVENTTY' },
+  ]
+};
+
+// All units combined
+const ALL_UNITS = [...MARKETING_UNITS, HOLDING_UNIT];
+
+// ── STATE ────────────────────────────────────────────────────────
+let allData    = {};   // unitName → { tasks, loading, error, listMap }
+let activeUnit = null;
+let filterStatus = 'all';
+let filterSearch = '';
+
+// ── API ──────────────────────────────────────────────────────────
+async function fetchListTasks(listId) {
+  const url = `https://api.clickup.com/api/v2/list/${listId}/task?archived=false&include_closed=true&subtasks=true`;
+  const res = await fetch(url, { headers: { Authorization: API_KEY } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const d = await res.json();
+  return d.tasks || [];
+}
+
+async function loadUnit(unit) {
+  allData[unit.name] = { tasks: [], loading: true, error: null };
+  if (activeUnit === unit.name) renderContent();
+
+  try {
+    const allTasks = [];
+    for (const list of unit.lists) {
+      const tasks = await fetchListTasks(list.id);
+      tasks.forEach(t => { t._listName = list.name; });
+      allTasks.push(...tasks);
+    }
+    allData[unit.name] = { tasks: allTasks, loading: false, error: null };
+  } catch (e) {
+    allData[unit.name] = { tasks: [], loading: false, error: e.message };
+  }
+
+  renderTabs();
+  if (activeUnit === unit.name) renderContent();
+  updateStats();
+}
+
+async function loadAll() {
+  const btn = document.getElementById('btnRefresh');
+  btn.disabled = true;
+  btn.textContent = 'Cargando…';
+  allData = {};
+  renderTabs();
+  renderContent();
+
+  await Promise.all(ALL_UNITS.map(u => loadUnit(u)));
+
+  // Set active tab to first unit that has tasks
+  if (!activeUnit || !allData[activeUnit]?.tasks?.length) {
+    const first = ALL_UNITS.find(u => allData[u.name]?.tasks?.length > 0);
+    if (first) activeUnit = first.name;
+  }
+  renderTabs();
+  renderContent();
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Actualizar`;
+  document.getElementById('lastUpdated').textContent =
+    `Actualizado: ${new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function statusStyle(status) {
+  const s = (status || '').toLowerCase();
+  if (s.match(/progress|progreso|doing|en curso/))
+    return { bg: '#eff6ff', color: '#3b82f6', label: 'En Progreso' };
+  if (s.match(/done|complet|closed|cerrada/))
+    return { bg: '#f0fdf4', color: '#10b981', label: 'Completada' };
+  if (s.match(/review|revisión|testing|qa/))
+    return { bg: '#fdf4ff', color: '#a855f7', label: 'En Revisión' };
+  if (s.match(/block|bloqueada/))
+    return { bg: '#fef2f2', color: '#ef4444', label: 'Bloqueada' };
+  return { bg: '#f9fafb', color: '#6b7280', label: status || 'Por Hacer' };
+}
+
+function priorityStyle(priority) {
+  if (!priority) return null;
+  const p = (priority.priority || '').toLowerCase();
+  if (p === 'urgent') return { bg: '#fef2f2', color: '#ef4444', label: '🔴 Urgente' };
+  if (p === 'high')   return { bg: '#fff7ed', color: '#f59e0b', label: '🟠 Alta' };
+  if (p === 'normal') return { bg: '#eff6ff', color: '#3b82f6', label: '🔵 Normal' };
+  if (p === 'low')    return { bg: '#f9fafb', color: '#9ca3af', label: '⚪ Baja' };
+  return null;
+}
+
+function formatDate(ts) {
+  if (!ts) return null;
+  const d = new Date(parseInt(ts));
+  const diff = Math.ceil((d - Date.now()) / 86400000);
+  const label = d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+  if (diff < 0)  return { label: `⚠ Venció ${label}`, cls: 'due-overdue' };
+  if (diff <= 5) return { label: `⏰ ${label}`, cls: 'due-soon' };
+  return { label: `📅 ${label}`, cls: 'due-ok' };
+}
+
+function isDone(task) {
+  return !!(task.status?.status || '').toLowerCase().match(/done|complet|closed|cerrada/);
+}
+
+function getFilteredTasks(unitName) {
+  const data = allData[unitName];
+  if (!data?.tasks) return [];
+  return data.tasks.filter(t => {
+    const s = (t.status?.status || '').toLowerCase();
+    const matchStatus =
+      filterStatus === 'all' ||
+      (filterStatus === 'done'       && s.match(/done|complet|closed|cerrada/)) ||
+      (filterStatus === 'inprogress' && s.match(/progress|progreso|doing|en curso/)) ||
+      (filterStatus === 'todo'       && !s.match(/done|complet|closed|cerrada|progress|progreso|doing|en curso/));
+    const matchSearch = !filterSearch ||
+      t.name.toLowerCase().includes(filterSearch.toLowerCase());
+    return matchStatus && matchSearch;
+  });
+}
+
+// ── RENDER TABS ──────────────────────────────────────────────────
+function renderTabs() {
+  const container = document.getElementById('tabs');
+  // Only show units that have tasks (or are still loading)
+  const visible = ALL_UNITS.filter(u => {
+    const d = allData[u.name];
+    return !d || d.loading || d.tasks.length > 0;
+  });
+  container.innerHTML = visible.map(u => {
+    const d = allData[u.name];
+    const count = d?.loading ? '…' : (d?.tasks?.length ?? '…');
+    const isActive = u.name === activeUnit;
+    return `<button class="tab ${isActive ? 'active' : ''}" onclick="switchTab('${u.name}')">
+      ${u.emoji} ${u.name}
+      <span class="badge">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function switchTab(name) {
+  activeUnit = name;
+  filterStatus = 'all';
+  filterSearch = '';
+  renderTabs();
+  renderContent();
+}
+
+// ── RENDER CONTENT ───────────────────────────────────────────────
+function renderContent() {
+  const container = document.getElementById('mainContent');
+  if (!activeUnit) {
+    container.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando…</div></div>`;
+    return;
+  }
+  const data = allData[activeUnit];
+  if (!data || data.loading) {
+    container.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando ${activeUnit}…</div></div>`;
+    return;
+  }
+  if (data.error) {
+    container.innerHTML = `<div class="error-msg">⚠️ Error al cargar ${activeUnit}: ${data.error}</div>`;
+    return;
+  }
+
+  const tasks = data.tasks;
+  const filtered = getFilteredTasks(activeUnit);
+  const done = tasks.filter(t => isDone(t)).length;
+  const pct  = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+
+  // Group by list
+  const byList = {};
+  filtered.forEach(t => {
+    const ln = t._listName || 'Sin lista';
+    if (!byList[ln]) byList[ln] = [];
+    byList[ln].push(t);
+  });
+
+  const unit = ALL_UNITS.find(u => u.name === activeUnit);
+  const listOrder = unit?.lists.map(l => l.name) || [];
+
+  let html = `
+    <div class="unit-header">
+      <div class="unit-title">${unit?.emoji || ''} ${activeUnit}</div>
+      <div class="progress-wrap">
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" style="width:${pct}%"></div>
+        </div>
+        <span class="progress-label">${pct}% completado</span>
+      </div>
+    </div>
+    <div class="filters">
+      <input class="search-input" type="text" placeholder="🔍 Buscar tarea…"
+        value="${filterSearch}" oninput="filterSearch=this.value;renderContent()"/>
+      <select class="filter-select" onchange="filterStatus=this.value;renderContent()">
+        <option value="all" ${filterStatus==='all'?'selected':''}>Todos los estados</option>
+        <option value="todo" ${filterStatus==='todo'?'selected':''}>Por hacer</option>
+        <option value="inprogress" ${filterStatus==='inprogress'?'selected':''}>En progreso</option>
+        <option value="done" ${filterStatus==='done'?'selected':''}>Completadas</option>
+      </select>
+      <span class="filter-count">${filtered.length} de ${tasks.length} tareas</span>
+    </div>`;
+
+  if (filtered.length === 0) {
+    html += `<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div>No hay tareas que coincidan con los filtros.</div>
+    </div>`;
+  } else {
+    const ordered  = listOrder.filter(l => byList[l]);
+    const others   = Object.keys(byList).filter(l => !listOrder.includes(l));
+    [...ordered, ...others].forEach(listName => {
+      const lt = byList[listName];
+      if (!lt?.length) return;
+      html += `<div class="list-section">
+        <div class="list-section-title">${listName} <span style="color:#d1d5db;font-weight:400;">(${lt.length})</span></div>
+        <div class="tasks-grid">${lt.map(t => renderTaskCard(t)).join('')}</div>
+      </div>`;
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+function renderTaskCard(task) {
+  const st     = statusStyle(task.status?.status);
+  const pri    = priorityStyle(task.priority);
+  const due    = formatDate(task.due_date);
+  const overdue = due?.cls === 'due-overdue';
+
+  // Description for tooltip
+  const desc = (task.description || '').trim();
+  const tooltipContent = desc
+    ? (desc.length > 300 ? desc.slice(0, 300) + '…' : desc)
+    : 'Sin descripción disponible.';
+
+  const dueHtml = '';
+
+  const priHtml = pri
+    ? `<span class="priority-badge" style="background:${pri.bg};color:${pri.color}">${pri.label}</span>`
+    : '';
+
+  const hintHtml = desc
+    ? `<div class="tooltip-hint">💬 Pasa el cursor para ver contexto</div>`
+    : '';
+
+  return `
+  <div class="task-tooltip-wrap">
+    <div class="task-tooltip">${escapeHtml(tooltipContent)}</div>
+    <div class="task-card" style="${overdue ? 'border-color:#fecaca;' : ''}">
+      <div class="task-card-accent" style="background:${st.color}"></div>
+      <div class="task-inner">
+        <div class="task-card-top">
+          <div class="task-name">${escapeHtml(task.name)}</div>
+          <span class="status-badge" style="background:${st.bg};color:${st.color}">
+            <span class="status-dot" style="background:${st.color}"></span>
+            ${st.label}
+          </span>
+        </div>
+        <div class="task-meta">
+          ${dueHtml}
+          ${priHtml}
+        </div>
+        ${hintHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── STATS ────────────────────────────────────────────────────────
+function updateStats() {
+  const allTasks = Object.values(allData).flatMap(d => d.tasks || []);
+  const done   = allTasks.filter(t => isDone(t)).length;
+  const inProg = allTasks.filter(t => !!(t.status?.status||'').toLowerCase().match(/progress|progreso|doing|en curso/)).length;
+  const todo   = allTasks.filter(t => !isDone(t) && !(t.status?.status||'').toLowerCase().match(/progress|progreso|doing|en curso/)).length;
+  document.getElementById('statTotal').textContent     = allTasks.length;
+  document.getElementById('statInProgress').textContent = inProg;
+  document.getElementById('statTodo').textContent      = todo;
+  document.getElementById('statDone').textContent      = done;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+activeUnit = MARKETING_UNITS[0].name;
+renderTabs();
+loadAll();
+</script>
+</body>
+</html>
